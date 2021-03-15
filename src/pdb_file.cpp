@@ -10,6 +10,9 @@
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <Shlwapi.h>
+
+#pragma comment(lib, "Shlwapi.lib")
 
 #if RTM_COMPILER_MSVC
 #pragma warning (disable: 4091) // 'typedef ': ignored on left of '' when no variable is declared
@@ -414,7 +417,10 @@ bool PDBFile::loadSymbolsFileWithoutValidation(const char* _PdbFileName)
 	{
 		bool bContinue = false;
 
-		HRESULT hr = pIDiaDataSource->loadDataFromPdb(rtm::MultiToWide(_PdbFileName));
+		IStream* pdbFileStream;
+		SHCreateStreamOnFileEx(rtm::MultiToWide(_PdbFileName), STGM_FAILIFTHERE, GENERIC_READ, false, nullptr, &pdbFileStream);
+
+		HRESULT hr = pIDiaDataSource->loadDataFromIStream(pdbFileStream);
 		
 		if(SUCCEEDED(hr))
 			bContinue = true;

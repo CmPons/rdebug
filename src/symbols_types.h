@@ -9,6 +9,7 @@
 #include <rdebug/inc/rdebug.h>
 #include <rdebug/src/symbols_map.h>
 #include <rbase/inc/containers.h>
+#include <map>
 
 class PDBFile;
 
@@ -52,6 +53,7 @@ struct Module
 	const char*		m_moduleName;
 	bool			m_isRTMdll;
 	ResolveInfo*	m_resolver;
+	std::map<uint64_t, uint64_t> m_resolvedAddresses;
 
 	Module()
 	{

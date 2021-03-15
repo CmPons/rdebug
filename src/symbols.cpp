@@ -570,11 +570,21 @@ uint64_t symbolResolverGetAddressID(uintptr_t _resolver, uint64_t _address, bool
 			if (module.m_module.m_toolchain.m_type == rdebug::Toolchain::MSVC)
 			{
 #if RTM_PLATFORM_WINDOWS
+				if (module.m_resolvedAddresses.find(_address) != module.m_resolvedAddresses.end())
+				{
+					return module.m_resolvedAddresses[_address];
+				}
+
 				loadPDB(module);
 				uint64_t id = module.m_resolver->m_PDBFile->getSymbolID(_address - module.m_module.m_baseAddress);
 				if (_isRTMdll)
 					*_isRTMdll = module.m_isRTMdll;
-				return id + module.m_module.m_baseAddress;
+
+				uint64_t retAddress = id + module.m_module.m_baseAddress;
+
+				module.m_resolvedAddresses[_address] = retAddress;
+
+				return retAddress;
 #endif // RTM_PLATFORM_WINDOWS
 			}
 			else
